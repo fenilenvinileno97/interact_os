@@ -4,21 +4,19 @@ import os
 import re
 import subprocess
 
-def check_files(ext):
+def check_ext(ext):
     command = f'find *{ext}'
     result = subprocess.run(command, capture_output=True, shell=True)
     return re.search(r"\.\w+", result.stdout.decode())[0]
-    # return result.stdout.decode()
-    
+
 def create_directory(ext_name):
     new_dir = f'{ext_name.replace(".", "")}'
     os.makedirs(f'./{new_dir}', exist_ok=True)
     
-def extract_ext(ext_list):
+def extract_ext():
     empty = []
-    for items in ext_list.values():
-        for values in items:
-            empty.append(check_files(values))
+    for k in os.listdir():
+        empty.append(check_ext(k))
     return empty
 
 def run():
@@ -26,25 +24,27 @@ def run():
                   'Office': ['.docx', '.xslx', '.ppt', '.txt', '.csv'],
                   'Code': ['.py', '.js', '.php']
                   }
-    # ext_file = input('Enter a file extension: ')
-    # extension_fits = False
-    # for key in extensions:
-    #     if ext_file in extensions[key]:
-    #         create_directory(key)
-    #         extension_fits = True
-    # if not extension_fits:
-    #     create_directory('Miscellaneous')
-    
-    # for i in extract_ext(extensions):
-    #     extension_fits = False
-    #     for key in extensions:
-    #         if i in extensions[key]:
-    #             create_directory(key)
-    #             extension_fits=True
-    #     if not extension_fits:
-    #         print('This does not belong')
-    
-    print(extract_ext())
+
+    from_cwd = set(extract_ext())
+    unmatched_ext = set()
+
+    for item in from_cwd:
+        ext_not_found = True
+        for value_list in extensions.values():
+            if item in value_list:
+                ext_not_found=False
+                break
+        if ext_not_found:
+            create_directory('Miscellaneous')
             
+    for item in from_cwd:
+        ext_found = True
+        for key, value_list in extensions.items():
+            if item in value_list:
+                ext_found=False
+                break
+        if not ext_found:
+            create_directory(key)
+
 if __name__ == '__main__':
     run()
