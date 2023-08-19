@@ -19,6 +19,26 @@ def extract_ext():
         empty.append(check_ext(k))
     return empty
 
+def search_matches(from_cwd, list_of_extensions):
+    matches = []
+    for item in from_cwd:
+        ext_not_found = True
+        for key, value in list_of_extensions.items():
+            if item in value:
+                ext_not_found=False
+                break
+        if ext_not_found:
+            matches.append((item, 'Not a category'))
+            
+    for item in from_cwd:
+        ext_found = True
+        for key, value in list_of_extensions.items():
+            if item in value:
+                ext_found=False
+                break
+        if not ext_found:
+            matches.append((item, key))
+    return matches
 def run():
     extensions = {'Multimedia' : ['.mp3', '.mp4', '.png', '.bmp'], 
                   'Office': ['.docx', '.xslx', '.ppt', '.txt', '.csv'],
@@ -26,25 +46,7 @@ def run():
                   }
 
     from_cwd = set(extract_ext())
-    unmatched_ext = set()
-
-    for item in from_cwd:
-        ext_not_found = True
-        for value_list in extensions.values():
-            if item in value_list:
-                ext_not_found=False
-                break
-        if ext_not_found:
-            create_directory('Miscellaneous')
-            
-    for item in from_cwd:
-        ext_found = True
-        for key, value_list in extensions.items():
-            if item in value_list:
-                ext_found=False
-                break
-        if not ext_found:
-            create_directory(key)
+    print(search_matches(from_cwd, extensions))
 
 if __name__ == '__main__':
     run()
