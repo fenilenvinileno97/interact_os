@@ -4,21 +4,17 @@ import os
 import re
 import subprocess
 
-def check_ext(ext):
-    command = f'find *{ext}'
-    result = subprocess.run(command, capture_output=True, shell=True)
-    return re.search(r"\.\w+", result.stdout.decode())[0]
-
-def create_directory(ext_name):
-    new_dir = f'{ext_name.replace(".", "")}'
+#this function has to extract extensions in a given directory
+def return_extension(path):
+    command = f"find {path} -maxdepth 1 -name '*'"
+    result = subprocess.run(command, shell=True, capture_output=True)
+    return set(re.findall(r"\.\w+", result.stdout.decode()))
+ 
+#this function creates directories based on the file category    
+def create_directory(category):
+    new_dir = f'{category.replace(".", "")}'
     os.makedirs(f'./{new_dir}', exist_ok=True)
     return f'./{new_dir}'
-
-def extract_ext(path):
-    empty = []
-    for k in os.listdir(path):
-        empty.append(check_ext(k))
-    return empty
 
 def search_matches(from_cwd, list_of_extensions):
     matches = {}
@@ -47,8 +43,7 @@ def chdir(path, ext_dict):
     for filename in os.listdir(path):
         for ext, dir in ext_dict.items():
             if filename.lower().endswith(ext):
-                new_dir = create_directory(dir)
-                os.rename(filename, new_dir)
+                print(filename, dir)
                 
         
 def run():
@@ -56,11 +51,7 @@ def run():
                   'Office': ['.docx', '.xslx', '.ppt', '.txt', '.csv'],
                   'Code': ['.py', '.js', '.php']
                   }
-
-    ext_list_in_cwd = set(extract_ext('./'))
-    searched_matches = search_matches(ext_list_in_cwd, extensions)
-    chdir('./', searched_matches)
-    # print(list(searched_matches.values()))
-
+    print(return_extension('./example_folder'))
+    print(return_extension('./'))
 if __name__ == '__main__':
     run()
