@@ -2,7 +2,7 @@
 
 import sys
 import os
-from pypdf import PdfReader
+# from pypdf import PdfReader
 
 def files_to_convert():
     filepath = sys.argv[1]
@@ -29,9 +29,10 @@ def create_text(file, filename):
             
 def run():
     filepath = files_to_convert()
-    filename = get_output_filename()
-    create_text(filepath, filename)
-    change_filename_ext(filename, '.txt')
+    # filename = get_output_filename()
+    # create_text(filepath, filename)
+    # change_filename_ext(filename, '.txt')
+    print(filepath)
             
 if __name__ == '__main__':
     run()
